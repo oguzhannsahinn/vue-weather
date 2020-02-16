@@ -1,12 +1,12 @@
 <template>
-<div id="app" :class="typeof weather.main != 'undefined'">
+<div id="app" :class="typeof day1.main != 'undefined'">
     <main>
 
         <div @keypress="funcs" class="search-box" :class="firstWeatherStatus">
             <input type="text" class="search-bar" placeholder="Search..." v-model="query" />
         </div>
 
-        <div class="weather-part" v-for="item of weather" v-bind:key="item.id">
+        <div class="weather-part" v-for="item of day1" v-bind:key="item.id">
             <div class="weather-wrap" v-if="typeof item.main != 'undefined'" :class="item.weather[0].main">
 
                 <div class="weather-box">
@@ -39,7 +39,6 @@ export default {
             weather: {},
             date: '',
             currentDay: '',
-            day1: [],
             firstWeatherStatus: '',
             day: {
                 0: 'Sunday',
@@ -50,7 +49,11 @@ export default {
                 5: 'Friday',
                 6: 'Saturday'
             },
-            counterr : 0
+            
+            day1: {},
+            remainingDays: {},
+            day1Count : 1,
+            remainingDayCount: 1
         }
     },
     methods: {
@@ -78,8 +81,15 @@ export default {
 
                 setTimeout(() => {
                     this.daySplitter();
+
                 }, 650);
             }
+
+            setInterval(function(){
+                if(document.getElementsByClassName('weather-part').length > 1) {
+                    document.querySelectorAll('.weather-part')[0].style.display = 'block';
+                } 
+            }, 1000); // check after 100ms every time
         },
         formatter(a) {
             return a.split(" ")[0]
@@ -89,17 +99,20 @@ export default {
         },
         daySplitter() {
 
-            var vm = this;
+            let vm = this;
 
             for (let i = 0; i < vm.weather.length; i++) {
-                if (parseFloat(vm.weather[i].dt_txt.split("-")[2]) === vm.currentDay) {
-                    vm.day1.push(vm.weather[i])
-                    this.counterr++;
+                if (parseFloat(vm.weather[i].dt_txt.split("-")[2]) == vm.currentDay) {                    
+                    this.day1Count++;
+                }else {
+                    this.remainingDayCount++
                 }
             }
-            // eslint-disable-next-line no-console
-            console.log("***" + this.day1)
-        }
+
+            this.day1 = this.weather.slice(0,this.day1Count)
+            this.remainingDays = this.weather.slice(this.day1Count,this.weather.length)
+
+        },
     }
 }
 </script>
@@ -121,6 +134,8 @@ export default {
     background-position: bottom;
     transition: 0.4s;
     border-bottom: 1px solid rgba(204, 204, 204, 0.233);
+
+    display:none;
 }
 
 .weather-wrap.warm {
