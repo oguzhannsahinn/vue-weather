@@ -11,7 +11,7 @@
 
                 <div class="weather-box">
                     <div class="date" style="display:block; opacity:.75">
-                        {{item.dt_txt.split(" ")[0]}} {{item.dt_txt.split(" ")[1].split(":")[0] + ':00'}}
+                        {{formatter(item.dt_txt)}} {{formatter2(item.dt_txt)}}
                     </div>
                     <div class="temp">{{ Math.round( item.main.temp )}}°C</div>
                     <div class="weather">{{item.weather[0].main}}</div>
@@ -29,6 +29,7 @@
 
 <script>
 export default {
+
     name: 'app',
     data() {
         return {
@@ -37,7 +38,19 @@ export default {
             query: '',
             weather: {},
             date: '',
-            firstWeatherStatus: ''
+            currentDay: '',
+            day1: [],
+            firstWeatherStatus: '',
+            day: {
+                0: 'Sunday',
+                1: 'Monday',
+                2: 'Tuesday',
+                3: 'Wednesday',
+                4: 'Thursday',
+                5: 'Friday',
+                6: 'Saturday'
+            },
+            counterr : 0
         }
     },
     methods: {
@@ -53,6 +66,7 @@ export default {
             console.log(data.list)
             this.weather = data.list;
             this.firstWeatherStatus = data.list[0].weather[0].main;
+            this.currentDay = parseFloat(data.list[0].dt_txt.split("-")[2]);
         },
         getDate() {
             this.date = new Date()
@@ -61,7 +75,30 @@ export default {
             if (e.key == "Enter") {
                 this.fetchWeather();
                 this.getDate();
+
+                setTimeout(() => {
+                    this.daySplitter();
+                }, 650);
             }
+        },
+        formatter(a) {
+            return a.split(" ")[0]
+        },
+        formatter2(a) {
+            return a.split(" ")[1].split(":")[0] + ':00'
+        },
+        daySplitter() {
+
+            var vm = this;
+
+            for (let i = 0; i < vm.weather.length; i++) {
+                if (parseFloat(vm.weather[i].dt_txt.split("-")[2]) === vm.currentDay) {
+                    vm.day1.push(vm.weather[i])
+                    this.counterr++;
+                }
+            }
+            // eslint-disable-next-line no-console
+            console.log("***" + this.day1)
         }
     }
 }
@@ -94,6 +131,7 @@ export default {
 .Clear {
     background-image: linear-gradient(to bottom, rgb(54, 167, 243), rgba(48, 171, 253, 0.75));
 }
+
 .Clouds {
     background-image: linear-gradient(to bottom, rgb(116, 133, 146), rgba(27, 52, 56, 0.75));
 }
