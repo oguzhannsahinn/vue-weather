@@ -1,13 +1,14 @@
+/* eslint-disable no-console */
 <template>
 <div id="app" :class="typeof weather.main != 'undefined'">
-    <main>
+    <main :class="firstWeatherStatus">
         <div @keypress="funcs" class="search-box">
             <input type="text" class="search-bar" placeholder="Search..." v-model="query" />
         </div>
 
         <!-- input group -->
-        <div id="inputGroup" style="padding:15px 0; text-align:center" v-if="showDays">
-            <label v-for="(day, index) in daysforLabels" :key="index">
+        <div id="inputGroup" v-if="showDays">
+            <label v-for="(day, index) in daysforLabels" :key="index" @click="currentDayFirstWeather">
                 <span> {{day.text}} </span>
                 <input class="day-button" type="radio" v-model="currentList" v-bind:value="day.value">
             </label>
@@ -54,7 +55,8 @@ export default {
             daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             next5days: [],
             currentDayIndex: 0,
-            daysforLabels: [{
+            daysforLabels: [
+                {
                     text: "Today",
                     value: "day1"
                 },
@@ -87,7 +89,7 @@ export default {
                 day4: {},
                 day5: {}
             },
-            currentList: 'day1'
+            currentList: 'day1',
         }
     },
     computed: {
@@ -96,9 +98,6 @@ export default {
         }
     },
     methods: {
-        setCurrentList(list) {
-            this.currentList = list
-        },
         fetchWeather() {
             // fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
             fetch(`${this.url_base}forecast?q=${this.query}&units=metric&APPID=${this.api_key}`)
@@ -109,6 +108,7 @@ export default {
         setResults(data) {
             // eslint-disable-next-line no-console
             console.log(data.list)
+
             this.weather = data.list;
             this.firstWeatherStatus = data.list[0].weather[0].main;
             this.currentDay = parseFloat(data.list[0].dt_txt.split("-")[2]);
@@ -125,21 +125,19 @@ export default {
                     this.daySplitter();
                     this.getTodayName();
                     this.showDays = true;
-                    // this.setCurrentList();
 
                 }, 650);
             }
 
             setInterval(function () {
-                if (document.getElementsByClassName('weather-part').length > 1) {
+                if (document.querySelector('.weather-part') != null) {
 
                     let styleObj = document.querySelectorAll('.weather-part')[0].style;
                     styleObj.visibility = 'visible'
                     styleObj.opacity = '1';
                 }
-            }, 1000); // check after 100ms every time
+            }, 500);
         },
-
         //get today's name
         getTodayName() {
             let todayString = new Date().toLocaleString('en-us', {
@@ -182,7 +180,7 @@ export default {
                 this.daysOfWeek = dayArr;
             } else {
 
-                for (let j = this.currentDayIndex; j < secondTurnCount; j++) {
+                for (let j = this.currentDayIndex; j < secondTurnCount+1; j++) {
 
                     dayArr.push(this.daysOfWeek[j]);
                 }
@@ -200,7 +198,7 @@ export default {
                 });
 
             });
-            this.daysforLabels = _daysforLabels
+            this.daysforLabels = _daysforLabels;
 
         },
         dateFormatter(a) {
@@ -209,7 +207,7 @@ export default {
         timeFormatter(a) {
             return a.split(" ")[1].split(":")[0] + ':00'
         },
-        //splitting all days by today and other days
+        //splitting all days ass today and other days
         daySplitter() {
 
             let vm = this;
@@ -243,6 +241,21 @@ export default {
                 }
                 this.detailWeather = !this.detailWeather;
             }
+        },
+        currentDayFirstWeather() {
+            //change background color by current day first weather status
+            let vm = this
+            setTimeout(function(){                
+                vm.firstWeatherStatus = document.querySelectorAll(".weather-wrap")[0].className.split(" ")[1];
+
+                 let el = document.querySelectorAll('.weather-part');
+                 for (let i = 1; i < el.length; i++) {
+                    el[i].style.visibility = 'hidden';
+                    el[i].style.opacity = '0';
+                } 
+                vm.detailWeather = true;
+
+            },5)
         }
     },
 }
@@ -253,10 +266,10 @@ export default {
 
 label {
     margin: 0 10px;
-    box-shadow: 0 5px 5px 0 rgba(150, 150, 150, 0.5);
+    box-shadow: 0 5px 5px 0 rgba(100, 100, 100, 0.5);
     padding: 5px;
     border-radius: 4px;
-    color: #3d3d3d;
+    color: #fff;
     display: inline-grid;
     height: 55px;
 }
@@ -273,7 +286,9 @@ label {
 }
 
 #inputGroup {
-    margin: 10px 0;
+    margin: 0 0 10px 0;
+    padding: 15px 0;
+    text-align:center;
 }
 
 * {
