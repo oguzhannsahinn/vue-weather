@@ -13,7 +13,7 @@
                 <input class="day-button" type="radio" v-model="currentList" v-bind:value="day.value">
             </label>
         </div>
-
+        <div v-if="detailWeather" style="color:#fff; opacity:.5; font-size:12px; text-align:center; padding-bottom:15px;">Click on the first weather box to see them all.</div>
         <div>
             <div class="weather-part" v-for="item of items" v-bind:key="item.id" v-on:click="displayToggle()">
                 <div class="weather-wrap" v-if="typeof item.main != 'undefined'" :class="item.weather[0].main">
@@ -123,6 +123,12 @@ export default {
                 
                 //yeni bir search yapıldığında günün sıfırlanması
                 this.currentList = 'day1';
+
+                // if(document.querySelectorAll(".weather-wrap")[0].classList.indexOf("first-weather-container") == -1) {
+                    
+                //     document.querySelectorAll(".weather-wrap")[0] = document.querySelectorAll(".weather-wrap")[0] + " first-weather-container";
+                // }
+                
 
                 setTimeout(() => {
                     this.daySplitter();
@@ -248,7 +254,7 @@ export default {
             //change background color by current day first weather status
             let vm = this
             setTimeout(function(){                
-                vm.firstWeatherStatus = document.querySelectorAll(".weather-wrap")[0].className.split(" ")[1];
+                vm.firstWeatherStatus = document.querySelectorAll(".weather-wrap")[0].className.split(" ")[1];                
 
                  let el = document.querySelectorAll('.weather-part');
                  for (let i = 1; i < el.length; i++) {
