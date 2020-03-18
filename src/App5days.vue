@@ -157,34 +157,33 @@ export default {
             //günler için sıralı dizi oluşturma. Today'den itibaren
 
             let dayArr = [];
-            let firstTurnCount = 7;
+            let firstTurnMaxCount = 7;
             let secondTurnCount = 5;
             this.currentDayIndex = parseInt(this.currentDayIndex);
+
             if(this.currentDayIndex < 3) {
 
-                firstTurnCount = (this.daysOfWeek.length - this.currentDayIndex);
+                firstTurnMaxCount = (this.daysOfWeek.length - this.currentDayIndex);
 
-            }else {
-                secondTurnCount = 5 - firstTurnCount;
-            }
-                
-            if (this.currentDayIndex > 3) {
-
-                dayArr.push(this.daysOfWeek[this.currentDayIndex]);
-
-                for (let j = 0; j < secondTurnCount; j++) {
-
-                    dayArr.push(this.daysOfWeek[j])
-                }
-
-                this.daysOfWeek = dayArr;
-            } else {
-
-                for (let j = this.currentDayIndex; j < secondTurnCount+1; j++) {
+                for (let j = this.currentDayIndex; j < this.daysOfWeek.length; j++) {
 
                     dayArr.push(this.daysOfWeek[j]);
                 }
-            }
+
+            }else {
+                
+                firstTurnMaxCount = (this.daysOfWeek.length - this.currentDayIndex);
+                secondTurnCount = 5 - firstTurnMaxCount;
+                
+                for (let j = this.currentDayIndex; j < this.daysOfWeek.length; j++) {
+
+                    dayArr.push(this.daysOfWeek[j]);
+                }
+                for(let k=0; k< secondTurnCount; k++) {
+                    dayArr.push(this.daysOfWeek[k]);
+                }
+
+            }          
 
             let _daysforLabels = [];
 
