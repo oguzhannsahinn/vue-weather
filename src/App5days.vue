@@ -120,6 +120,9 @@ export default {
             if (e.key == "Enter") {
                 this.fetchWeather();
                 this.getDate();
+                
+                //yeni bir search yapıldığında günün sıfırlanması
+                this.currentList = 'day1';
 
                 setTimeout(() => {
                     this.daySplitter();
